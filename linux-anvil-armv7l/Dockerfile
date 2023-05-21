@@ -39,6 +39,8 @@ RUN yum update -y && \
         bzip2 \
         sudo \
         tar \
+        patch \
+        tmux \
         which && \
     /opt/docker/bin/yum_clean_all
 
