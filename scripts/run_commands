@@ -17,8 +17,8 @@ export python_version="3.10"  # should match the one provided in mambaforge
 # else
 #    exit 1
 # fi
-export condapkg="https://github.com/e8035669/conda_cross/releases/download/v1.0.2/mamba4arm-1.0.2-py310-Linux-armv7l.sh"
-export conda_chksum="6c2956e154d617550157f571bfdaee9459f81972b36dd70bdc4077a6097fc512"
+export condapkg="https://github.com/e8035669/conda_cross/releases/download/v1.0.3/mamba4arm-1.0.3-py310-Linux-armv7l.sh"
+export conda_chksum="902473bdceb3d32f460832e81815a149c73eb56f9f1836ae4f4f61d7d0d10d36"
 
 # give sudo permission for conda user to run yum (user creation is postponed
 # to the entrypoint, so we can create a user with the same id as the host)
@@ -43,14 +43,16 @@ source /opt/conda/etc/profile.d/conda.sh
 conda activate
 conda config --set show_channel_urls True
 conda config --set channel_priority strict
-conda config ${additional_channel} --add channels conda-forge
+# conda config ${additional_channel} --add channels conda-forge
 conda config --show-sources
 
 # Update everything first
-mamba update --yes --all
+# mamba update --yes --all
+conda update --yes --all
 
 # Ensure conda build, deployment and docker tools ar present
-mamba install --yes --quiet \
+# mamba install --yes --quiet \
+conda install --yes --quiet \
     "python=$python_version" \
     git \
     patch \
