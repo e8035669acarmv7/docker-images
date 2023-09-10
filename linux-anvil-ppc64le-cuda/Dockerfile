@@ -100,27 +100,6 @@ RUN rpm -e --nodeps --verbose gcc gcc-c++
 COPY scripts/run_commands /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
-# Download and cache new compiler packages.
-# Should speedup installation of them on CIs.
-RUN source /opt/conda/etc/profile.d/conda.sh && \
-    conda activate && \
-    conda create -n test --yes --quiet --download-only \
-        conda-forge::binutils_impl_linux-ppc64le \
-        conda-forge::binutils_linux-ppc64le \
-        conda-forge::gcc_impl_linux-ppc64le \
-        conda-forge::gcc_linux-ppc64le \
-        conda-forge::gfortran_impl_linux-ppc64le \
-        conda-forge::gfortran_linux-ppc64le \
-        conda-forge::gxx_impl_linux-ppc64le \
-        conda-forge::gxx_linux-ppc64le \
-        conda-forge::libgcc-ng \
-        conda-forge::libgfortran-ng \
-        conda-forge::libstdcxx-ng && \
-    conda remove --yes --quiet -n test --all && \
-    conda clean -tiy && \
-    chgrp -R lucky /opt/conda && \
-    chmod -R g=u /opt/conda
-
 # Download and cache CUDA related packages.
 RUN if [[ "$CUDA_VER" == "9.2" || "$CUDA_VER" == "10.0" || "$CUDA_VER" == "10.1" ]]; then \
         echo "`cudatoolkit` not available for CUDA_VER<10.2"; \

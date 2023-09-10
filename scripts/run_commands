@@ -5,20 +5,22 @@ set -exo pipefail
 export additional_channel="--add channels e8035669acarmv7"
 
 # export miniforge_arch="$(uname -m)"
-# export miniforge_version="22.9.0-0"
-export python_version="3.10"  # should match the one provided in mambaforge
-# export condapkg="https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/Mambaforge-${miniforge_version}-Linux-${miniforge_arch}.sh"
+# export miniforge_version="23.3.1-0"
+export python_version="3.10"  # should match the one provided in miniforge
+# export condapkg="https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/Miniforge3-${miniforge_version}-Linux-${miniforge_arch}.sh"
 # if [ "$(uname -m)" = "x86_64" ]; then
-#    export conda_chksum="7049f5ebdd6e2aee7611874599ab14445cd63070cdb63db2e00ae0b90d7c6132"
+#    export conda_chksum="9be723d231609919fa3e3bb06f899a9a9c22e92e570bada8129a1bf50fee8d73"
 # elif [ "$(uname -m)" = "ppc64le" ]; then
-#    export conda_chksum="a17530e0e981991db5f6875e949dc22554f2ed0dd2b1bbb40ce677c910a2dc51"
+#    export conda_chksum="434b461d309110bfeb72198541a541985aa197e3b605de27978c15f31d1520ef"
 # elif [ "$(uname -m)" = "aarch64" ]; then
-#    export conda_chksum="6076cfb0c2f88efa3e5e125dc54f3c0f8219cfe1ae9d9258a5abe42dbcf21a13"
+#    export conda_chksum="b71277b8b40a6817d923fde0b858f56a4504f4e9b659d343dd8eae9d9473ab7f"
 # else
 #    exit 1
 # fi
+
 export condapkg="https://github.com/e8035669/conda_cross/releases/download/v1.0.4/mamba4arm-1.0.4-py310-Linux-armv7l.sh"
 export conda_chksum="73cea227344db3be71c37a15da85b473e9fbacf90a173aa6bf1e54e63d3b61d5"
+
 
 # give sudo permission for conda user to run yum (user creation is postponed
 # to the entrypoint, so we can create a user with the same id as the host)

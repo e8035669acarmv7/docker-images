@@ -1,12 +1,15 @@
+ARG DISTRO_ARCH
 ARG DISTRO_NAME
 ARG DISTRO_VER
-FROM ${DISTRO_NAME}:${DISTRO_VER}
+FROM --platform=linux/${DISTRO_ARCH} ${DISTRO_NAME}:${DISTRO_VER}
 
 LABEL maintainer="conda-forge <conda-forge@googlegroups.com>"
 
+ARG DISTRO_ARCH
 ARG DISTRO_NAME
 ARG DISTRO_VER
-ENV DISTRO_NAME=${DISTRO_NAME} \
+ENV DISTRO_ARCH=${DISTRO_ARCH} \
+    DISTRO_NAME=${DISTRO_NAME} \
     DISTRO_VER=${DISTRO_VER}
 
 # Set an encoding to make things work smoothly.
@@ -21,19 +24,16 @@ ADD qemu-s390x-static /usr/bin/qemu-s390x-static
 # bust the docker cache so that we always rerun the installs below
 ADD https://loripsum.net/api /opt/docker/etc/gibberish
 
-# Remove outdated repo URLs
-RUN rm -rf /etc/yum.repos.d/*
-# Add the archived centos6 repo URL
-ADD centos6-vault.repo /etc/yum.repos.d/vault.repo
-
 # Resolves a nasty NOKEY warning that appears when using yum.
-RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-${DISTRO_VER}
+RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
 
 # Install basic requirements.
 COPY scripts/yum_clean_all /opt/docker/bin/
 RUN yum update -y && \
     yum install -y \
         bzip2 \
+        glibc-minimal-langpack \
+        glibc-langpack-en \
         sudo \
         tar \
         which && \
@@ -46,7 +46,7 @@ RUN /opt/docker/bin/run_commands
 # Add a file for users to source to activate the `conda`
 # environment `base`. Also add a file that wraps that for
 # use with the `ENTRYPOINT`.
-COPY linux-anvil-comp7/entrypoint_source /opt/docker/bin/entrypoint_source
+COPY linux-anvil-alma/entrypoint_source /opt/docker/bin/entrypoint_source
 COPY scripts/entrypoint /opt/docker/bin/entrypoint
 
 # Ensure that all containers start with tini and the user selected process.
