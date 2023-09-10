@@ -53,8 +53,8 @@ conda config --show-sources
 conda update --yes --all
 
 # Ensure conda build, deployment and docker tools ar present
-# mamba install --yes --quiet \
-conda install --yes --quiet \
+# conda install --yes --quiet \
+mamba install --yes --quiet \
     "python=$python_version" \
     git \
     patch \
