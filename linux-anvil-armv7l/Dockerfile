@@ -55,15 +55,15 @@ RUN source /opt/conda/etc/profile.d/conda.sh && \
     conda create -n test --yes --quiet --download-only \
         e8035669acarmv7::binutils_impl_linux-armv7l \
         e8035669acarmv7::binutils_linux-armv7l \
-        e8035669acarmv7::gcc_impl_linux-armv7l \
-        e8035669acarmv7::gcc_linux-armv7l \
-        e8035669acarmv7::gfortran_impl_linux-armv7l \
-        e8035669acarmv7::gfortran_linux-armv7l \
-        e8035669acarmv7::gxx_impl_linux-armv7l \
-        e8035669acarmv7::gxx_linux-armv7l \
-        e8035669acarmv7::libgcc-ng \
-        e8035669acarmv7::libgfortran-ng \
-        e8035669acarmv7::libstdcxx-ng && \
+        e8035669acarmv7::gcc_impl_linux-armv7l=12 \
+        e8035669acarmv7::gcc_linux-armv7l=12 \
+        e8035669acarmv7::gfortran_impl_linux-armv7l=12 \
+        e8035669acarmv7::gfortran_linux-armv7l=12 \
+        e8035669acarmv7::gxx_impl_linux-armv7l=12 \
+        e8035669acarmv7::gxx_linux-armv7l=12 \
+        e8035669acarmv7::libgcc-ng=12 \
+        e8035669acarmv7::libgfortran-ng=12 \
+        e8035669acarmv7::libstdcxx-ng=12 && \
     conda remove --yes --quiet -n test --all && \
     conda clean -tiy && \
     chgrp -R lucky /opt/conda && \
