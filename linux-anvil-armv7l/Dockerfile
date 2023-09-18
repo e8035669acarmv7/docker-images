@@ -20,7 +20,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 
 # bust the docker cache so that we always rerun the installs below
-ADD https://loripsum.net/api /opt/docker/etc/gibberish
+# ADD https://loripsum.net/api /opt/docker/etc/gibberish
 
 # Resolves a nasty NOKEY warning that appears when using yum.
 RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32 && \

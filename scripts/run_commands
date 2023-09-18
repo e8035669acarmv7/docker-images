@@ -50,7 +50,7 @@ conda config --show-sources
 
 # Update everything first
 # mamba update --yes --all
-conda update --yes --all
+# conda update --yes --all
 
 # Ensure conda build, deployment and docker tools ar present
 # mamba install --yes --quiet \
@@ -60,7 +60,7 @@ conda install --yes --quiet \
     patch \
     pip \
     conda-build \
-    boa=0.14 \
+    boa \
     anaconda-client \
     su-exec \
     tini \
