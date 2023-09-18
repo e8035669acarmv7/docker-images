@@ -18,8 +18,8 @@ export python_version="3.10"  # should match the one provided in miniforge
 #    exit 1
 # fi
 
-export condapkg="https://github.com/e8035669/conda_cross/releases/download/v1.0.4/mamba4arm-1.0.4-py310-Linux-armv7l.sh"
-export conda_chksum="73cea227344db3be71c37a15da85b473e9fbacf90a173aa6bf1e54e63d3b61d5"
+export condapkg="https://github.com/e8035669/conda_cross/releases/download/v1.0.5/mamba4arm-1.0.5-py310-Linux-armv7l.sh"
+export conda_chksum="501c10e6eed185d2d33617da9666a7eef206ddd2c797e543f8dc6800f9106cf2"
 
 
 # give sudo permission for conda user to run yum (user creation is postponed
