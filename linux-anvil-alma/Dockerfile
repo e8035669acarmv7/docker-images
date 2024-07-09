@@ -17,7 +17,6 @@ ENV LANG en_US.UTF-8
 
 # Add qemu in here so that we can use this image on regular linux hosts with qemu user installed
 ADD qemu-aarch64-static /usr/bin/qemu-aarch64-static
-ADD qemu-arm-static /usr/bin/qemu-arm-static
 ADD qemu-ppc64le-static /usr/bin/qemu-ppc64le-static
 ADD qemu-s390x-static /usr/bin/qemu-s390x-static
 
@@ -50,7 +49,7 @@ COPY linux-anvil-alma/entrypoint_source /opt/docker/bin/entrypoint_source
 COPY scripts/entrypoint /opt/docker/bin/entrypoint
 
 # Ensure that all containers start with tini and the user selected process.
-# Activate the `conda` environment `base` and the devtoolset compiler.
+# Activate the `conda` environment `base`.
 # Provide a default command (`bash`), which will start if the user doesn't specify one.
 ENTRYPOINT [ "/opt/conda/bin/tini", "--", "/opt/docker/bin/entrypoint" ]
 CMD [ "/bin/bash" ]

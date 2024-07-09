@@ -1,33 +1,36 @@
 #!/bin/bash -ex
 
-set -xe
-if [ "$(uname -m)" == "x86_64" ]; then
+set -eux
+
+if [ "$(uname -m)" = "x86_64" ]; then
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
 fi
 
-export QEMU_STATIC_VERSION=v7.2.0-1
-qemu_aarch64_sha256=dce64b2dc6b005485c7aa735a7ea39cb0006bf7e5badc28b324b2cd0c73d883f
-qemu_arm_sha256=9f07762a3cd0f8a199cb5471a92402a4765f8e2fcb7fe91a87ee75da9616a806
-qemu_ppc64le_sha256=a8855b9a9cdefbe2163d9f7851fb71c77207d816451237caed616eb9b03229ac
-qemu_s390x_sha256=a438ab2f7c2e0f0ffe63992bccedaf60d789cfb1849e035c0764bda7d9e73a9a
+rm -f qemu-*-static
 
-set +e
-rm qemu-*-static
-set -e
+# We use curl and bsdtar to obtain QEMU binaries. Install them beforehand.
+sudo apt-get update -qq
+DEBIAN_FRONTEND=noninteractive \
+    sudo apt-get install --yes --no-install-recommends \
+    ca-certificates curl libarchive-tools
 
-wget https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_STATIC_VERSION}/qemu-aarch64-static
-wget https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_STATIC_VERSION}/qemu-arm-static
-wget https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_STATIC_VERSION}/qemu-ppc64le-static
-wget https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_STATIC_VERSION}/qemu-s390x-static
+# see https://gitlab.com/qemu-project/qemu/-/tags for versions;
+# we use the RPMs from https://kojipkgs.fedoraproject.org/packages/qemu;
+# avoid qemu builds from unreleased fedora versions, compare `build`
+# vs. https://en.wikipedia.org/wiki/Fedora_Linux_release_history;
+# prefer non-`.0` patch releases to try to avoid potential new regressions;
+# if possible, check https://gitlab.com/qemu-project/qemu/-/issues
+# for relevant issues in old vs new version;
+version='8.2.4'
+build='1.fc40'
+for arch in aarch64 ppc64le s390x; do
+    curl -sL \
+        "https://kojipkgs.fedoraproject.org/packages/qemu/${version}/${build}/x86_64/qemu-user-static-${arch/ppc64le/ppc}-${version}-${build}.x86_64.rpm" |
+        bsdtar -xf- --strip-components=3 ./usr/bin/qemu-${arch}-static
+done
 
-sha256sum qemu-*-static
-
-sha256sum qemu-aarch64-static | grep -F "${qemu_aarch64_sha256}"
-sha256sum qemu-arm-static | grep -F "${qemu_arm_sha256}"
-sha256sum qemu-ppc64le-static | grep -F "${qemu_ppc64le_sha256}"
-sha256sum qemu-s390x-static | grep -F "${qemu_s390x_sha256}"
-
-chmod +x qemu-aarch64-static
-chmod +x qemu-arm-static
-chmod +x qemu-ppc64le-static
-chmod +x qemu-s390x-static
+sha256sum --check << 'EOF'
+5fb1ae8235807b310000ed3a1b03d49a000c51ec1a1f84869720b87273976466  qemu-aarch64-static
+4d9e1b1fc7e51d6bee4e087e06c1185cadc2d85b1308e802ed15c754ff6475cc  qemu-ppc64le-static
+3454f16b26dc94fcce23e4e2f97ab98033b659ad491675235c2388521154afac  qemu-s390x-static
+EOF
