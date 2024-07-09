@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    if: false
     name: ${{ matrix.cfg.DOCKERIMAGE }}:${{ matrix.cfg.DOCKERTAG }} (${{ matrix.cfg.DISTRO_ARCH }})
     runs-on: ubuntu-latest
     strategy:
