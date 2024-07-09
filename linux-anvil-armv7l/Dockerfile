@@ -24,7 +24,10 @@ ENV LANGUAGE=en_US.UTF-8
 
 # Resolves a nasty NOKEY warning that appears when using yum.
 RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32 && \
-    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
+    sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
+    sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
+    sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
 
 COPY scripts/yum_clean_all /opt/docker/bin/
 RUN yum update -y && \
@@ -45,7 +48,7 @@ RUN yum update -y && \
     /opt/docker/bin/yum_clean_all
 
 # Run common commands
-COPY scripts/run_commands /opt/docker/bin/run_commands
+COPY scripts/run_commands_armv7l /opt/docker/bin/run_commands
 RUN /opt/docker/bin/run_commands
 
 # Download and cache new compiler packages.

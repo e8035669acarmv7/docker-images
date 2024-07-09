@@ -1,0 +1,63 @@
+#!/bin/bash -il
+
+set -exo pipefail
+
+export additional_channel=""
+
+export python_version="3.11"  # should match the one provided in miniforge
+export condapkg="https://github.com/e8035669/conda_cross/releases/download/v1.0.6/mamba4arm-1.0.6-py311-Linux-armv7l.sh"
+export conda_chksum="1b87805f7883a0cdf86734ad654bcc2ea76459d6c76aae203e8dbe8284f84489"
+
+# give sudo permission for conda user to run yum (user creation is postponed
+# to the entrypoint, so we can create a user with the same id as the host)
+echo 'conda ALL=NOPASSWD: /usr/bin/yum' >> /etc/sudoers
+# give sudo permission to copy the cuda headers and libraries for cross compilation
+echo 'conda ALL=NOPASSWD: /usr/bin/cp -r /opt/conda/targets/x86_64-linux /usr/local/cuda/targets/x86_64-linux' >> /etc/sudoers
+echo 'conda ALL=NOPASSWD: /usr/bin/cp -r /opt/conda/targets/ppc64le-linux /usr/local/cuda/targets/ppc64le-linux' >> /etc/sudoers
+echo 'conda ALL=NOPASSWD: /usr/bin/cp -r /opt/conda/targets/sbsa-linux /usr/local/cuda/targets/sbsa-linux' >> /etc/sudoers
+
+# Install the latest Miniconda with Python 3 and update everything.
+curl -s -L $condapkg > miniconda.sh
+sha256sum miniconda.sh | grep $conda_chksum
+
+bash miniconda.sh -b -p /opt/conda
+rm -f miniconda.sh
+
+# Work around TLS issues while updating conda's python and retrieving channel notices
+export CONDA_NUMBER_CHANNEL_NOTICES="0"
+touch /opt/conda/conda-meta/pinned
+ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
+source /opt/conda/etc/profile.d/conda.sh
+conda activate
+conda config --set show_channel_urls True
+conda config --set channel_priority disabled
+# conda config ${additional_channel} --add channels conda-forge
+conda config --show-sources
+
+# Update everything first
+mamba update --yes --all
+
+# Ensure conda build, deployment and docker tools are present
+mamba install --yes --quiet \
+    "python=$python_version" \
+    git \
+    patch \
+    pip \
+    conda-build \
+    anaconda-client \
+    su-exec \
+    tini
+
+# Clean to reduce image size
+conda clean -tipy
+
+# Install docker tools
+export CONDA_SUEXEC_INFO=( `conda list su-exec | grep su-exec` )
+echo "su-exec ${CONDA_SUEXEC_INFO[1]}" >> /opt/conda/conda-meta/pinned
+export CONDA_TINI_INFO=( `conda list tini | grep tini` )
+echo "tini ${CONDA_TINI_INFO[1]}" >> /opt/conda/conda-meta/pinned
+
+# Lucky group gets permission to write in the conda dir
+groupadd -g 32766 lucky
+chown -R $USER /opt/conda
+chgrp -R lucky /opt/conda && chmod -R g=u /opt/conda
